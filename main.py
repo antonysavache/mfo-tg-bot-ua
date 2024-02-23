@@ -70,8 +70,8 @@ async def callbacks(callback: types.CallbackQuery):
 
         kb = InlineKeyboardMarkup().add(next_cards_deb)
 
-        if len(cards["deb_cards"]) - current > 5:
-            plus = 5
+        if len(cards["deb_cards"]) - current > 3:
+            plus = 3
         else:
             plus = len(cards["deb_cards"]) - current
 
@@ -97,8 +97,8 @@ async def callbacks(callback: types.CallbackQuery):
 
         kb = InlineKeyboardMarkup().add(next_cards_cred)
 
-        if len(cards["cred_cards"]) - current > 5:
-            plus = 5
+        if len(cards["cred_cards"]) - current > 3:
+            plus = 3
         else:
             plus = len(cards["cred_cards"]) - current
 
@@ -125,8 +125,8 @@ async def callbacks(callback: types.CallbackQuery):
 
         kb = InlineKeyboardMarkup().add(next_cards_other)
 
-        if len(cards["other"]) - current > 5:
-            plus = 5
+        if len(cards["other"]) - current > 3:
+            plus = 3
         else:
             plus = len(cards["other"]) - current
 
