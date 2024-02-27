@@ -12,7 +12,7 @@ from buttons import *
 from cards import *
 from db import db
 
-bot = Bot(token="6716449345:AAGHMvS4zae8_vxO8YtBANeOHBvMm-NzHIw")
+bot = Bot(token="6716449345:AAGq_FhUKGWV1M7g7RhjLrFWxRKHkc5F0Nk")
 dp = Dispatcher(bot, storage=MemoryStorage())
 user_cards: Dict[int, int] = {}
 
