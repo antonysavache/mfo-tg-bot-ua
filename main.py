@@ -12,7 +12,7 @@ from buttons import *
 from cards import *
 from db import db
 
-bot = Bot(token="6716449345:AAGq_FhUKGWV1M7g7RhjLrFWxRKHkc5F0Nk")
+bot = Bot(token="6716449345:AAGHMvS4zae8_vxO8YtBANeOHBvMm-NzHIw")
 dp = Dispatcher(bot, storage=MemoryStorage())
 user_cards: Dict[int, int] = {}
 
@@ -23,7 +23,10 @@ async def all_message(message: types.Message):
         users = db.get_all_users()
         text = message.text.split("/all ")[1]
         for i in users:
-            await bot.send_message(chat_id=i, text=text, parse_mode='html')
+            try:
+                await bot.send_message(chat_id=i[0], text=text, parse_mode='html')
+            except:
+                pass
 
 
 @dp.message_handler(text="До головного меню")
