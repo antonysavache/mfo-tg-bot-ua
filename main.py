@@ -1,3 +1,5 @@
+from typing import Dict
+
 from aiogram import Dispatcher, types, Bot, executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
@@ -12,6 +14,7 @@ from db import db
 
 bot = Bot(token="6716449345:AAGHMvS4zae8_vxO8YtBANeOHBvMm-NzHIw")
 dp = Dispatcher(bot, storage=MemoryStorage())
+user_cards: Dict[int, int] = {}
 
 
 @dp.message_handler(commands=["all"])
@@ -25,10 +28,9 @@ async def all_message(message: types.Message):
 
 @dp.message_handler(text="До головного меню")
 async def back_menu(message: types.Message):
-    if not(db.check_record(message.from_user.id)):
-        db.add_user(message.from_user.id)
+    db.check_record(message.from_user.id)
 
-    db.update_cur_page(0)
+    user_cards[message.from_user.id] = 0
     text_first = 'База, яка знаходиться у моєму розпорядженні, налічує понад 100 фінансових організацій.'
     text_second = 'Готовий допомогти вам в оформленні позики або взяття кредиту.'
     text_third = 'Уточніть будь ласка, яка послуга вас цікавить?'
@@ -40,8 +42,7 @@ async def back_menu(message: types.Message):
 
 @dp.message_handler(commands=["start"])
 async def bot_start(message: types.Message):
-    if not(db.check_record(message.from_user.id)):
-        db.add_user(message.from_user.id)
+    db.check_record(message.from_user.id)
 
     start_button = InlineKeyboardButton("✅ Натиснiть для пiдбору пропозицій", callback_data="start_button")
     start = InlineKeyboardMarkup().add(start_button)
@@ -52,7 +53,7 @@ async def bot_start(message: types.Message):
 @dp.callback_query_handler()
 async def callbacks(callback: types.CallbackQuery):
     if callback.data == "start_button":
-        db.update_cur_page(0)
+        user_cards[callback.from_user.id] = 0
         text_first = 'База, яка знаходиться у моєму розпорядженні, налічує понад 100 фінансових організацій.'
         text_second = 'Готовий допомогти вам в оформленні позики або взяття кредиту.'
         text_third = 'Уточніть будь ласка, яка послуга вас цікавить?'
@@ -65,8 +66,9 @@ async def callbacks(callback: types.CallbackQuery):
         text = 'Ось, що вдалося знайти за Вашим запитом. Будь ласка, ознайомтесь: '
         await bot.send_message(chat_id=callback.from_user.id, text=text, reply_markup=mmenu)
 
-        current = db.get_current()
-        plus = 0
+        current = user_cards.get(callback.from_user.id)
+        if current is None:
+            current = 0
 
         kb = InlineKeyboardMarkup().add(next_cards_deb)
 
@@ -81,9 +83,9 @@ async def callbacks(callback: types.CallbackQuery):
                 InlineKeyboardButton('Перейти до оформлення', url=cards["deb_cards"][i+1]['url'])
             ), parse_mode='html')
 
-        db.update_cur_page(current+plus)
+        user_cards[callback.from_user.id] = current + plus
         if len(cards["deb_cards"]) == current + plus:
-            db.update_cur_page(0)
+            user_cards[callback.from_user.id] = 0
             kb = InlineKeyboardMarkup().add(back_button)
         end_text = 'Чи хочете Ви переглянути інші компанії з бази?'
         await bot.send_message(chat_id=callback.from_user.id, text=end_text, reply_markup=kb)
@@ -92,8 +94,9 @@ async def callbacks(callback: types.CallbackQuery):
         text = 'Ось, що вдалося знайти за Вашим запитом. Будь ласка, ознайомтесь: '
         await bot.send_message(chat_id=callback.from_user.id, text=text, reply_markup=mmenu)
 
-        current = db.get_current()
-        plus = 0
+        current = user_cards.get(callback.from_user.id)
+        if current is None:
+            current = 0
 
         kb = InlineKeyboardMarkup().add(next_cards_cred)
 
@@ -108,9 +111,9 @@ async def callbacks(callback: types.CallbackQuery):
                 InlineKeyboardButton('Перейти до оформлення', url=cards["cred_cards"][i+1]['url'])
             ), parse_mode='html')
 
-        db.update_cur_page(current+plus)
+        user_cards[callback.from_user.id] = current + plus
         if len(cards["cred_cards"]) == current + plus:
-            db.update_cur_page(0)
+            user_cards[callback.from_user.id] = 0
             kb = InlineKeyboardMarkup().add(back_button)
         end_text = 'Чи хочете Ви переглянути інші компанії з бази?'
         await bot.send_message(chat_id=callback.from_user.id, text=end_text, reply_markup=kb)
@@ -120,8 +123,9 @@ async def callbacks(callback: types.CallbackQuery):
         text = 'Ось, що вдалося знайти за Вашим запитом. Будь ласка, ознайомтесь: '
         await bot.send_message(chat_id=callback.from_user.id, text=text, reply_markup=mmenu)
 
-        current = db.get_current()
-        plus = 0
+        current = user_cards.get(callback.from_user.id)
+        if current is None:
+            current = 0
 
         kb = InlineKeyboardMarkup().add(next_cards_other)
 
@@ -136,9 +140,10 @@ async def callbacks(callback: types.CallbackQuery):
                 InlineKeyboardButton('Перейти до оформлення', url=cards["other"][i+1]['url'])
             ), parse_mode='html')
 
-        db.update_cur_page(current+plus)
+        user_cards[callback.from_user.id] = current+plus
         if len(cards["other"]) == current + plus:
-            db.update_cur_page(0)
+            user_cards[callback.from_user.id] = 0
+
             kb = InlineKeyboardMarkup().add(back_button)
         end_text = 'Чи хочете Ви переглянути інші компанії з бази?'
         await bot.send_message(chat_id=callback.from_user.id, text=end_text, reply_markup=kb)
