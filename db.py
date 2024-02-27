@@ -1,38 +1,43 @@
-import sqlite3
+import psycopg2
+import config
 
 
 class DataBase(object):
     def __init__(self):
-        super(DataBase, self).__init__()
-        self.db = sqlite3.connect('DataBase.db')
-        self.sql = self.db.cursor()
+        # super(DataBase, self).__init__()
+        # self.db = sqlite3.connect('DataBase.db')
+        # self.sql = self.db.cursor()
+        self.conn = psycopg2.connect(
+            host=config.PGHOST,
+            database=config.PGDATABASE,
+            user=config.PGUSER,
+            port=config.PGPORT,
+            password=config.PGPASS)
+
+        self.cursor = self.conn.cursor()
 
     def check_record(self, id):
-        self.sql.execute("SELECT id FROM users WHERE id = ?", (id,))
-        if self.sql.fetchone() is None:
-            return False
-        else:
-            return True
+        self.cursor.execute(""" SELECT id FROM mfo_users WHERE id = %s """, [id])
+        user_id = self.cursor.fetchone()
+        self.conn.commit()
 
-    def add_user(self, user_id):
-        self.sql.execute(f"INSERT INTO users VALUES ('{user_id}')")
-        self.db.commit()
-
+        if user_id is None:
+            self.cursor.execute("""INSERT INTO mfo_users VALUES (%s)""", [id])
+            self.conn.commit()
 
     def get_current(self):
-        for i in self.sql.execute("SELECT current FROM current_page"):
-            return i[0]
+        self.cursor.execute(""" SELECT page FROM mfo_current_page """)
+        return self.cursor.fetchone()[0]
 
 
     def update_cur_page(self, number):
-        self.sql.execute("UPDATE current_page SET current = ?", (number,))
-        self.db.commit()
+        self.cursor.execute(""" UPDATE mfo_current_page SET page = %s""", [number])
+        self.conn.commit()
 
 
     def get_all_users(self):
-        users = []
-        for i in self.sql.execute("SELECT id FROM users"):
-            users.append(i[0])
-        return users
+        self.cursor.execute(f"""SELECT id FROM mfo_users""")
+        all_ids = self.cursor.fetchall()
+        return all_ids
 
 db = DataBase()
