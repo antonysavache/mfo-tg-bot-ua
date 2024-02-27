@@ -65,7 +65,7 @@ async def callbacks(callback: types.CallbackQuery):
         # await bot.send_message(chat_id=callback.from_user.id, text=text_second)
         await bot.send_message(chat_id=callback.from_user.id, text=text_third, reply_markup=pick)
 
-    if callback.data == "deb_card":
+    elif callback.data == "deb_card":
         text = 'Ось, що вдалося знайти за Вашим запитом. Будь ласка, ознайомтесь: '
         await bot.send_message(chat_id=callback.from_user.id, text=text, reply_markup=mmenu)
 
@@ -93,7 +93,7 @@ async def callbacks(callback: types.CallbackQuery):
         end_text = 'Чи хочете Ви переглянути інші компанії з бази?'
         await bot.send_message(chat_id=callback.from_user.id, text=end_text, reply_markup=kb)
 
-    if callback.data == "cred_card":
+    elif callback.data == "cred_card":
         text = 'Ось, що вдалося знайти за Вашим запитом. Будь ласка, ознайомтесь: '
         await bot.send_message(chat_id=callback.from_user.id, text=text, reply_markup=mmenu)
 
@@ -121,8 +121,7 @@ async def callbacks(callback: types.CallbackQuery):
         end_text = 'Чи хочете Ви переглянути інші компанії з бази?'
         await bot.send_message(chat_id=callback.from_user.id, text=end_text, reply_markup=kb)
 
-
-    if callback.data == "other":
+    elif callback.data == "other":
         text = 'Ось, що вдалося знайти за Вашим запитом. Будь ласка, ознайомтесь: '
         await bot.send_message(chat_id=callback.from_user.id, text=text, reply_markup=mmenu)
 
@@ -151,14 +150,14 @@ async def callbacks(callback: types.CallbackQuery):
         end_text = 'Чи хочете Ви переглянути інші компанії з бази?'
         await bot.send_message(chat_id=callback.from_user.id, text=end_text, reply_markup=kb)
 
-    if callback.data == "get_information":
+    elif callback.data == "get_information":
         f_button = InlineKeyboardButton("Бiльщ нiж 20.000 грн", callback_data='pass')
         s_button = InlineKeyboardButton("До 20.000 грн", callback_data='pass')
 
         kb = InlineKeyboardMarkup().add(f_button).add(s_button)
         await bot.send_message(callback.from_user.id, text="Яка грошова сума Вас цікавить?", reply_markup=kb)
 
-    if callback.data == "pass":
+    elif callback.data == "pass":
         f_button = InlineKeyboardButton("Завжди відмовляють", callback_data='other')
         s_button = InlineKeyboardButton("Відмов не було", callback_data='other')
         th_button = InlineKeyboardButton("Іноді", callback_data='other')
