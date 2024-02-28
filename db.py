@@ -33,18 +33,8 @@ class DataBase(object):
                 else:
                     name = last_name
 
-            self.cursor.execute("""INSERT INTO tg_bot_users (id, name, username) VALUES (%s, %s, %s)""", (message.from_user.id, name, message.from_user.username))
+            self.cursor.execute("""INSERT INTO mfo_users (id, name, username) VALUES (%s, %s, %s)""", (message.from_user.id, name, message.from_user.username))
             self.conn.commit()
-
-    def get_current(self):
-        self.cursor.execute(""" SELECT page FROM mfo_current_page """)
-        return self.cursor.fetchone()[0]
-
-
-    def update_cur_page(self, number):
-        self.cursor.execute(""" UPDATE mfo_current_page SET page = %s""", [number])
-        self.conn.commit()
-
 
     def get_all_users(self):
         self.cursor.execute(f"""SELECT id FROM mfo_users""")
