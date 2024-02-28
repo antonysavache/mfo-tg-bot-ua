@@ -89,7 +89,7 @@ async def callbacks(callback: types.CallbackQuery):
             showed_cards[callback.from_user.id] = set()
             kb = InlineKeyboardMarkup().add(back_button)
             cards_to_show = remained_cards
-            
+
         for card_number in cards_to_show:
             text = cards["deb_cards"][card_number]['text']
             await bot.send_photo(chat_id=callback.from_user.id, photo=open(cards['deb_cards'][card_number]['img'], 'rb'), caption=text, reply_markup=InlineKeyboardMarkup().add(
@@ -149,30 +149,51 @@ async def callbacks(callback: types.CallbackQuery):
         text = 'Ось, що вдалося знайти за Вашим запитом. Будь ласка, ознайомтесь: '
         await bot.send_message(chat_id=callback.from_user.id, text=text, reply_markup=mmenu)
 
-        current = user_cards.get(callback.from_user.id)
-        if current is None:
-            current = 0
+        # current = user_cards.get(callback.from_user.id)
+        # if current is None:
+        #     current = 0
 
         kb = InlineKeyboardMarkup().add(next_cards_other)
 
-        if len(cards["other"]) - current > 3:
-            plus = 3
-        else:
-            plus = len(cards["other"]) - current
+        all_cards = set(cards["other"].keys())
+        showed = showed_cards[callback.from_user.id]
+        remained_cards = all_cards - showed
 
-        for i in range(current, current+plus):
-            text = cards["other"][i+1]['text']
-            await bot.send_photo(chat_id=callback.from_user.id, photo=open(cards['other'][i+1]['img'], 'rb'), caption=text, reply_markup=InlineKeyboardMarkup().add(
-                InlineKeyboardButton('Перейти до оформлення', url=cards["other"][i+1]['url'])
+        if len(remained_cards) > 3:
+            cards_to_show = random.sample(remained_cards, 3)
+            showed_cards[callback.from_user.id] = showed.union(cards_to_show)
+        else:
+            showed_cards[callback.from_user.id] = set()
+            kb = InlineKeyboardMarkup().add(back_button)
+            cards_to_show = remained_cards
+
+        for card_number in cards_to_show:
+            text = cards["other"][card_number]['text']
+            await bot.send_photo(chat_id=callback.from_user.id, photo=open(cards['other'][card_number]['img'], 'rb'), caption=text, reply_markup=InlineKeyboardMarkup().add(
+                InlineKeyboardButton('Перейти до оформлення', url=cards["other"][card_number]['url'])
             ), parse_mode='html')
 
-        user_cards[callback.from_user.id] = current+plus
-        if len(cards["other"]) == current + plus:
-            user_cards[callback.from_user.id] = 0
-
-            kb = InlineKeyboardMarkup().add(back_button)
         end_text = 'Чи хочете Ви переглянути інші компанії з бази?'
         await bot.send_message(chat_id=callback.from_user.id, text=end_text, reply_markup=kb)
+
+        # if len(cards["other"]) - current > 3:
+        #     plus = 3
+        # else:
+        #     plus = len(cards["other"]) - current
+        # 
+        # for i in range(current, current+plus):
+        #     text = cards["other"][i+1]['text']
+        #     await bot.send_photo(chat_id=callback.from_user.id, photo=open(cards['other'][i+1]['img'], 'rb'), caption=text, reply_markup=InlineKeyboardMarkup().add(
+        #         InlineKeyboardButton('Перейти до оформлення', url=cards["other"][i+1]['url'])
+        #     ), parse_mode='html')
+        # 
+        # user_cards[callback.from_user.id] = current+plus
+        # if len(cards["other"]) == current + plus:
+        #     user_cards[callback.from_user.id] = 0
+        # 
+        #     kb = InlineKeyboardMarkup().add(back_button)
+        # end_text = 'Чи хочете Ви переглянути інші компанії з бази?'
+        # await bot.send_message(chat_id=callback.from_user.id, text=end_text, reply_markup=kb)
 
     elif callback.data == "get_information":
         f_button = InlineKeyboardButton("Бiльщ нiж 20.000 грн", callback_data='pass')
