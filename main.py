@@ -31,7 +31,7 @@ async def all_message(message: types.Message):
 
 @dp.message_handler(text="До головного меню")
 async def back_menu(message: types.Message):
-    db.check_record(message.from_user.id)
+    db.check_record(message)
 
     user_cards[message.from_user.id] = 0
     text_first = 'База, яка знаходиться у моєму розпорядженні, налічує понад 100 фінансових організацій.'
@@ -45,7 +45,7 @@ async def back_menu(message: types.Message):
 
 @dp.message_handler(commands=["start"])
 async def bot_start(message: types.Message):
-    db.check_record(message.from_user.id)
+    db.check_record(message)
 
     start_button = InlineKeyboardButton("✅ Натиснiть для пiдбору пропозицій", callback_data="start_button")
     start = InlineKeyboardMarkup().add(start_button)
