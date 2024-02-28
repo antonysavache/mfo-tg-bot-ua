@@ -160,7 +160,7 @@ async def callbacks(callback: types.CallbackQuery):
         remained_cards = all_cards - showed
 
         if len(remained_cards) > 3:
-            cards_to_show = random.sample(remained_cards, 3)
+            cards_to_show = set(random.sample(list(remained_cards), 3))
             showed_cards[callback.from_user.id] = showed.union(cards_to_show)
         else:
             showed_cards[callback.from_user.id] = set()
@@ -180,17 +180,17 @@ async def callbacks(callback: types.CallbackQuery):
         #     plus = 3
         # else:
         #     plus = len(cards["other"]) - current
-        # 
+        #
         # for i in range(current, current+plus):
         #     text = cards["other"][i+1]['text']
         #     await bot.send_photo(chat_id=callback.from_user.id, photo=open(cards['other'][i+1]['img'], 'rb'), caption=text, reply_markup=InlineKeyboardMarkup().add(
         #         InlineKeyboardButton('Перейти до оформлення', url=cards["other"][i+1]['url'])
         #     ), parse_mode='html')
-        # 
+        #
         # user_cards[callback.from_user.id] = current+plus
         # if len(cards["other"]) == current + plus:
         #     user_cards[callback.from_user.id] = 0
-        # 
+        #
         #     kb = InlineKeyboardMarkup().add(back_button)
         # end_text = 'Чи хочете Ви переглянути інші компанії з бази?'
         # await bot.send_message(chat_id=callback.from_user.id, text=end_text, reply_markup=kb)
