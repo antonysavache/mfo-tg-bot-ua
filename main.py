@@ -205,7 +205,11 @@ async def callbacks(callback: types.CallbackQuery):
         kb = InlineKeyboardMarkup().add(next_cards_other)
 
         all_cards = set(cards["other"].keys())
-        showed = showed_cards[callback.from_user.id]
+        
+        showed = showed_cards.get(callback.from_user.id)
+        if not showed:
+            showed = set()
+            
         remained_cards = all_cards - showed
 
         if len(remained_cards) > 3:
