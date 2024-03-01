@@ -82,6 +82,11 @@ async def callbacks(callback: types.CallbackQuery):
             logging.error(traceback.format_exc())
 
     elif callback.data == "deb_card":
+        try:
+            await bot.edit_message_reply_markup(callback.from_user.id, callback.message.message_id, reply_markup=None)
+        except:
+            logging.error(traceback.format_exc())
+
         text = 'Ось, що вдалося знайти за Вашим запитом. Будь ласка, ознайомтесь: '
         try:
             await bot.send_message(chat_id=callback.from_user.id, text=text, reply_markup=mmenu)
@@ -140,6 +145,11 @@ async def callbacks(callback: types.CallbackQuery):
             logging.error(traceback.format_exc())
 
     elif callback.data == "cred_card":
+        try:
+            await bot.edit_message_reply_markup(callback.from_user.id, callback.message.message_id, reply_markup=None)
+        except:
+            logging.error(traceback.format_exc())
+
         text = 'Ось, що вдалося знайти за Вашим запитом. Будь ласка, ознайомтесь: '
         try:
             await bot.send_message(chat_id=callback.from_user.id, text=text, reply_markup=mmenu)
@@ -225,7 +235,7 @@ async def callbacks(callback: types.CallbackQuery):
         #     plus = 3
         # else:
         #     plus = len(cards["other"]) - current
-        # 
+        #
         # for i in range(current, current+plus):
         #     text = cards["other"][i+1]['text']
         #     try:
@@ -234,11 +244,11 @@ async def callbacks(callback: types.CallbackQuery):
         #         ), parse_mode='html')
         #     except:
         #         logging.error(traceback.format_exc())
-        # 
+        #
         # user_cards[callback.from_user.id] = current+plus
         # if len(cards["other"]) == current + plus:
         #     user_cards[callback.from_user.id] = 0
-        # 
+        #
         #     kb = InlineKeyboardMarkup().add(back_button)
         # end_text = 'Чи хочете Ви переглянути інші компанії з бази?'
         # try:
@@ -247,6 +257,11 @@ async def callbacks(callback: types.CallbackQuery):
         #     logging.error(traceback.format_exc())
 
     elif callback.data == "get_information":
+        try:
+            await bot.edit_message_reply_markup(callback.from_user.id, callback.message.message_id, reply_markup=None)
+        except:
+            logging.error(traceback.format_exc())
+
         f_button = InlineKeyboardButton("Бiльщ нiж 20.000 грн", callback_data='pass')
         s_button = InlineKeyboardButton("До 20.000 грн", callback_data='pass')
 
@@ -257,6 +272,11 @@ async def callbacks(callback: types.CallbackQuery):
             logging.error(traceback.format_exc())
 
     elif callback.data == "pass":
+        try:
+            await bot.edit_message_reply_markup(callback.from_user.id, callback.message.message_id, reply_markup=None)
+        except:
+            logging.error(traceback.format_exc())
+
         f_button = InlineKeyboardButton("Завжди відмовляють", callback_data='other')
         s_button = InlineKeyboardButton("Відмов не було", callback_data='other')
         th_button = InlineKeyboardButton("Іноді", callback_data='other')
