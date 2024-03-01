@@ -178,7 +178,7 @@ async def callbacks(callback: types.CallbackQuery):
 
     elif callback.data == "other":
         try:
-            bot.edit_message_reply_markup(callback.from_user.id, callback.message.message_id, reply_markup=None)
+            await bot.edit_message_reply_markup(callback.from_user.id, callback.message.message_id, reply_markup=None)
         except:
             logging.error(traceback.format_exc())
 
