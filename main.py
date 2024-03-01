@@ -222,7 +222,6 @@ async def callbacks(callback: types.CallbackQuery):
                 await bot.send_photo(chat_id=callback.from_user.id, photo=open(cards['other'][card_number]['img'], 'rb'), caption=text, reply_markup=InlineKeyboardMarkup().add(
                     InlineKeyboardButton('Перейти до оформлення', url=cards["other"][card_number]['url'])
                 ), parse_mode='html')
-                await asyncio.sleep(1)
             except:
                 logging.error(traceback.format_exc())
 
