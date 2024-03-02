@@ -28,7 +28,7 @@ async def all_message(message: types.Message):
         text = message.text.split("/all ")[1]
         for i in users:
             try:
-                await bot.send_message(chat_id=i[0], text=text, parse_mode='html')
+                await bot.send_message(chat_id=i[0], text=text, parse_mode='html', disable_web_page_preview=True)
             except:
                 pass
 
