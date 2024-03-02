@@ -81,4 +81,28 @@ class DataBase(object):
             logging.error(traceback.format_exc())
             return []
 
+    def save_number(self, user_id, number):
+        try:
+            if self.conn.closed or self.cursor.closed:
+                if not self.conn.closed:
+                    self.conn.close()
+                if not self.cursor.closed:
+                    self.cursor.close()
+
+                self.conn = psycopg2.connect(
+                    host=config.PGHOST,
+                    database=config.PGDATABASE,
+                    user=config.PGUSER,
+                    port=config.PGPORT,
+                    password=config.PGPASS)
+
+                self.cursor = self.conn.cursor()
+
+            self.cursor.execute(f"""UPDATE mfo_users SET number = %s WHERE id = %s""", (number, user_id))
+            self.conn.commit()
+
+        except:
+            logging.error(traceback.format_exc())
+
+
 db = DataBase()

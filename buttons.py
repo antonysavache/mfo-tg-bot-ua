@@ -8,6 +8,9 @@ pick_button_3 = InlineKeyboardButton('Позики, кредити', callback_da
 
 pick = InlineKeyboardMarkup().add(pick_button_3)
 
+number_button = KeyboardButton('Номер', request_contact=True)
+request_number = InlineKeyboardMarkup().add(number_button)
+
 next_cards_deb = InlineKeyboardButton('Покажи ще компанії', callback_data='deb_card')
 next_cards_cred = InlineKeyboardButton('Покажи ще компанії', callback_data='cred_card')
 next_cards_other = InlineKeyboardButton('Покажи ще компанії', callback_data='other')
