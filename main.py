@@ -89,7 +89,7 @@ async def get_contact(message: types.Message):
 async def callbacks(callback: types.CallbackQuery):
     if callback.data == "start_button":
 
-        text = 'Для подбору кредитiв нажмiть на "Номер" нижче'
+        text = 'Для подбору кредитiв потрiбна швидка реєстрація. Для цього натисніть кнопку нижче "Реєстрація"'
         try:
             await bot.send_message(chat_id=callback.from_user.id, text=text, reply_markup=request_number)
         except:
