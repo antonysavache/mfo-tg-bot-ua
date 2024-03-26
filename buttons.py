@@ -5,8 +5,15 @@ from aiogram.types import ReplyKeyboardRemove, \
 # pick_button_1 = InlineKeyboardButton('Дебетові карти', callback_data='deb_card')
 # pick_button_2 = InlineKeyboardButton('Кредитні картки', callback_data='cred_card')
 pick_button_3 = InlineKeyboardButton('Позики, кредити', callback_data='get_information')
+pick_button_4 = InlineKeyboardButton('Да', callback_data='get_information')
+pick_button_5 = InlineKeyboardButton('Нет', callback_data='get_information')
 
-pick = InlineKeyboardMarkup().add(pick_button_3)
+
+promotions_btn = InlineKeyboardButton('Получить предложения', callback_data='other')
+
+pick = InlineKeyboardMarkup().add(pick_button_4, pick_button_5)
+
+get_promotions = InlineKeyboardMarkup().add(promotions_btn)
 
 number_button = KeyboardButton('Реєстрація', request_contact=True)
 request_number = ReplyKeyboardMarkup(resize_keyboard=True).add(number_button)

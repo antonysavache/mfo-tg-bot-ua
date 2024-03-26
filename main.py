@@ -1,25 +1,30 @@
 import asyncio
+import datetime
 import logging
 import random
 import traceback
+from asyncio import Task
 from typing import Dict, List, Set
 
+import aioschedule
 from aiogram import Dispatcher, types, Bot, executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.types import ReplyKeyboardRemove, \
     ReplyKeyboardMarkup, KeyboardButton, \
     InlineKeyboardMarkup, InlineKeyboardButton, ContentType
+from scheduler.asyncio import scheduler
 
 import cards
 from buttons import *
 from cards import *
 from db import db
 
-bot = Bot(token="6716449345:AAGq_FhUKGWV1M7g7RhjLrFWxRKHkc5F0Nk")
+bot = Bot(token="6643171232:AAFWKXOWkYU6mHMhRvuPmEYn6p4IV2BnxBs")
 dp = Dispatcher(bot, storage=MemoryStorage())
 user_cards: Dict[int, int] = {}
 showed_cards: Dict[int, Set[int]] = {}
+user_hot_messages: Dict[int, Task] = {}
 
 
 @dp.message_handler(commands=["all"])
@@ -61,26 +66,33 @@ async def bot_start(message: types.Message):
     start_button = InlineKeyboardButton("✅ Натиснiть для пiдбору пропозицій", callback_data="start_button")
     start = InlineKeyboardMarkup().add(start_button)
     text = f"Доброго дня! Мене звати Тарас Ботович! Спецiалiст у фiнансовiй сферi."
+    text_2 = 'Получите займ под 0%'
 
     try:
-        await bot.send_photo(chat_id=message.from_user.id, photo=open('images/start.png', 'rb'), caption=text, parse_mode='html', reply_markup=start)
+        await bot.send_message(chat_id=message.from_user.id, text=text_2, reply_markup=start)
     except:
         logging.error(traceback.format_exc())
+
+    # try:
+    #     await bot.send_photo(chat_id=message.from_user.id, photo=open('images/start.png', 'rb'), caption=text, parse_mode='html', reply_markup=start)
+    # except:
+    #     logging.error(traceback.format_exc())
 
 
 @dp.message_handler(content_types=ContentType.CONTACT)
 async def get_contact(message: types.Message):
     db.save_number(message.from_user.id, message.contact.phone_number)
 
-    text_first = 'База, яка знаходиться у моєму розпорядженні, налічує понад 100 фінансових організацій.'
-    text_second = 'Готовий допомогти вам в оформленні позики або взяття кредиту.'
-    text_third = 'Уточніть будь ласка, яка послуга вас цікавить?'
+    # text_first = 'База, яка знаходиться у моєму розпорядженні, налічує понад 100 фінансових організацій.'
+    # text_second = 'Готовий допомогти вам в оформленні позики або взяття кредиту.'
+    # text_third = 'Уточніть будь ласка, яка послуга вас цікавить?'
+    text_fouth = 'Благодарим за регистрацию'
 
     # await bot.send_message(chat_id=callback.from_user.id, text=text_first)
     # await bot.send_message(chat_id=callback.from_user.id, text=text_second)
 
     try:
-        await bot.send_message(chat_id=message.from_user.id, text=text_third, reply_markup=pick)
+        await bot.send_message(chat_id=message.from_user.id, text=text_fouth, reply_markup=promotions_btn)
     except:
         logging.error(traceback.format_exc())
 
@@ -89,25 +101,26 @@ async def get_contact(message: types.Message):
 async def callbacks(callback: types.CallbackQuery):
     if callback.data == "start_button":
 
-        text = 'Для подбору кредитiв потрiбна швидка реєстрація. Для цього натисніть кнопку нижче "Реєстрація"'
-        try:
-            await bot.send_message(chat_id=callback.from_user.id, text=text, reply_markup=request_number)
-        except:
-            logging.error(traceback.format_exc())
+        # text = 'Для подбору кредитiв потрiбна швидка реєстрація. Для цього натисніть кнопку нижче "Реєстрація"'
+        # try:
+        #     await bot.send_message(chat_id=callback.from_user.id, text=text, reply_markup=request_number)
+        # except:
+        #     logging.error(traceback.format_exc())
 
         # user_cards[callback.from_user.id] = 0
         # showed_cards[callback.from_user.id] = set()
         # text_first = 'База, яка знаходиться у моєму розпорядженні, налічує понад 100 фінансових організацій.'
         # text_second = 'Готовий допомогти вам в оформленні позики або взяття кредиту.'
         # text_third = 'Уточніть будь ласка, яка послуга вас цікавить?'
+        text_new = 'Брали кредит уже?'
         #
         # # await bot.send_message(chat_id=callback.from_user.id, text=text_first)
         # # await bot.send_message(chat_id=callback.from_user.id, text=text_second)
         #
-        # try:
-        #     await bot.send_message(chat_id=callback.from_user.id, text=text_third, reply_markup=pick)
-        # except:
-        #     logging.error(traceback.format_exc())
+        try:
+            await bot.send_message(chat_id=callback.from_user.id, text=text_new, reply_markup=pick)
+        except:
+            logging.error(traceback.format_exc())
 
     elif callback.data == "deb_card":
         try:
@@ -214,11 +227,27 @@ async def callbacks(callback: types.CallbackQuery):
         except:
             logging.error(traceback.format_exc())
 
+    elif callback.data == 'number':
+        if db.check_number(callback.from_user.id):
+            callback.data = 'other'
+            try:
+                await callbacks(callback)
+            except:
+                logging.error(traceback.format_exc())
+
+        else:
+            text = 'Для подбору кредитiв потрiбна швидка реєстрація. Для цього натисніть кнопку нижче "Реєстрація"'
+
+            try:
+                await bot.send_message(chat_id=callback.from_user.id, text=text, reply_markup=request_number)
+            except:
+                logging.error(traceback.format_exc())
+
     elif callback.data == "other":
         try:
             await bot.edit_message_reply_markup(callback.from_user.id, callback.message.message_id, reply_markup=None)
         except:
-            logging.error(traceback.format_exc())
+            pass
 
         text = 'Ось, що вдалося знайти за Вашим запитом. Будь ласка, ознайомтесь: '
         try:
@@ -262,6 +291,13 @@ async def callbacks(callback: types.CallbackQuery):
             await bot.send_message(chat_id=callback.from_user.id, text=end_text, reply_markup=kb)
         except:
             logging.error(traceback.format_exc())
+
+        task = user_hot_messages.get(callback.from_user.id)
+        if task:
+            task.cancel()
+
+        task = asyncio.create_task(send_hot_message(callback))
+        user_hot_messages[callback.from_user.id] = task
 
         # if len(cards["other"]) - current > 3:
         #     plus = 3
@@ -309,15 +345,26 @@ async def callbacks(callback: types.CallbackQuery):
         except:
             logging.error(traceback.format_exc())
 
-        f_button = InlineKeyboardButton("Завжди відмовляють", callback_data='other')
-        s_button = InlineKeyboardButton("Відмов не було", callback_data='other')
-        th_button = InlineKeyboardButton("Іноді", callback_data='other')
+        f_button = InlineKeyboardButton("Завжди відмовляють", callback_data='number')
+        s_button = InlineKeyboardButton("Відмов не було", callback_data='number')
+        th_button = InlineKeyboardButton("Іноді", callback_data='number')
 
         kb = InlineKeyboardMarkup().add(f_button).add(s_button).add(th_button)
         try:
             await bot.send_message(callback.from_user.id, text="Ви отримували раніше відмови у оформленні позики чи видачі кредиту?", reply_markup=kb)
         except:
             logging.error(traceback.format_exc())
+
+
+async def send_hot_message(callback):
+    await asyncio.sleep(300)
+    try:
+        await callbacks(callback)
+    except:
+        logging.error(traceback.format_exc())
+
+    user_hot_messages.pop(callback.from_user.id, None)
+
 
 
 if __name__ == "__main__":
